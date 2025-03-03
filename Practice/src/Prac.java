@@ -10,59 +10,56 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
 public class Prac {
-
+	Logger logger = LogManager.getRootLogger();
+	WebDriver driver = new ChromeDriver();
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		//Setting the driver
-		try {
-			Logger logger = LogManager.getRootLogger();
-			WebDriver driver = new ChromeDriver();
+	
+	@Given("login")
+	public void launch()
+	{
+			
+			
 			logger.info("Webdriver initilized");
 			//Navigating to the site
-			FileName f = new FileName();
+			FileNamePageObject f = new FileNamePageObject();
 			Properties prop = new Properties();
 
 	        try {
 	            // load a properties file
 	            prop.load(new FileInputStream("C:\\Users\\rachana.kikkeri\\eclipse-workspace\\Practice\\resources\\config.properties"));
-
+	            String url = prop.getProperty("url");
+				driver.get(url);
 
 	        } catch (IOException ex) {
 	            ex.printStackTrace();
 	        }
-			String url = prop.getProperty("url");
-			driver.get(url);
+		
+	}
+	
+		@When("Read from properties file")
+		public void selectElement()
+		{
+			FileNamePageObject fl = new FileNamePageObject();
 			logger.info("Navigated to the site");
 			driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
 			//Finding the elements to search for TSLA
-			WebElement text = driver.findElement(By.xpath("//*[@id=\"ybar-sbq\"]"));
-			text.sendKeys("TSLA");
-			driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
-			driver.findElement(By.xpath("(//li[@title=\"Tesla, Inc.\"])[1]")).click();	
-			driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
-			String value = driver.findElement(By.xpath("//span[@class=\"base    yf-ipw1h0\"]")).getText();
-			System.out.println(value);
-			String tex = value.trim();
-			//Asserting the value, if greater or not.
-			double num = Double.parseDouble(tex);
-			System.out.println(num);
-			Assert.assertTrue(num>200,"Value greater than 200");
-			logger.info("Verified that the current value of the stock price is greater than 200");
-			System.out.println("Value is greater than 200");	
-			String valuepre = driver.findElement(By.xpath("//span[@data-testid=\"qsp-post-price\"]")).getText();
-			System.out.println("Previous price is "+valuepre);
-		}
-		catch(Exception e)
+			fl.callRef(driver);
+			
+			
+}
+		@Then("Quit the driver")
+		public void quitDriver()
 		{
-			e.printStackTrace();
+			driver.quit();
 		}
-				
-	}
-
 }
